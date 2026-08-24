@@ -37,8 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success) {
-      final route =
-          authController.getHomeRouteForRole(authController.userRole);
+      final route = authController.getHomeRouteForRole(authController.userRole);
       Get.offAllNamed(route);
     }
   }
@@ -46,199 +45,185 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // ─── Header ──────────────────────────────
-              _buildHeader(),
-
-              // ─── Form ────────────────────────────────
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 32.h),
-
-                      // Welcome text
-                      Text(
-                        'Welcome Back',
-                        style: AppStyles.h1(
-                          color: AppColors.titleColor,
-                          fontWeight: FontWeight.w700,
-                        ),
+      backgroundColor: const Color(0xFFF4F7FA),
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            // Premium Gradient Background Header
+            Container(
+              height: 400.h,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E40AF),
+                    Color(0xFF3B82F6),
+                    Color(0xFF60A5FA),
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    SizedBox(height: 40.h),
+                    Container(
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(24.r),
+                        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, 10))
+                        ],
                       ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Sign in to continue your learning journey',
-                        style: AppStyles.h5(
-                          color: AppColors.subtitleColor,
-                        ),
+                      child: Icon(Icons.school_rounded, size: 48.sp, color: Colors.white),
+                    ),
+                    SizedBox(height: 24.h),
+                    Text(
+                      'EduBD',
+                      style: TextStyle(
+                        fontSize: 32.sp,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 1,
                       ),
-                      SizedBox(height: 32.h),
-
-                      // Username field
-                      _buildLabel('Username'),
-                      SizedBox(height: 8.h),
-                      CustomTextField(
-                        controller: _usernameController,
-                        hintText: 'Enter your username',
-                        isOutlined: true,
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.all(12.w),
-                          child: Icon(Icons.person_outline_rounded, size: 22.w),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Username is required';
-                          }
-                          return null;
-                        },
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Learning Management System',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.9),
+                        letterSpacing: 0.5,
                       ),
-                      SizedBox(height: 20.h),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
-                      // Password field
-                      _buildLabel('Password'),
-                      SizedBox(height: 8.h),
-                      CustomTextField(
-                        controller: _passwordController,
-                        hintText: 'Enter your password',
-                        isPassword: true,
-                        isOutlined: true,
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.all(12.w),
-                          child: Icon(Icons.lock_outline_rounded, size: 22.w),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Password is required';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
+            // Floating Form Card
+            Container(
+              margin: EdgeInsets.only(top: 320.h, left: 24.w, right: 24.w, bottom: 40.h),
+              padding: EdgeInsets.all(32.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32.r),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 24, offset: const Offset(0, 12))
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome Back',
+                      style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w800, color: const Color(0xFF1E293B)),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Sign in to continue your journey',
+                      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500, color: const Color(0xFF64748B)),
+                    ),
+                    SizedBox(height: 32.h),
+
+                    // Username
+                    Text('Username', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+                    SizedBox(height: 12.h),
+                    CustomTextField(
+                      controller: _usernameController,
+                      hintText: 'Enter your username',
+                      isOutlined: true,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(12.w),
+                        child: Icon(Icons.person_outline_rounded, size: 22.w, color: const Color(0xFF94A3B8)),
                       ),
-                      SizedBox(height: 32.h),
+                      validator: (value) => (value == null || value.isEmpty) ? 'Username is required' : null,
+                    ),
+                    SizedBox(height: 24.h),
 
-                      // Login Button
-                      GetBuilder<AuthController>(
-                        builder: (controller) {
-                          return CustomButton(
-                            text: 'Sign In',
-                            loading: controller.isLoading,
-                            onTap: _handleLogin,
-                            height: 52.h,
-                            radius: 12.r,
-                          );
-                        },
+                    // Password
+                    Text('Password', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+                    SizedBox(height: 12.h),
+                    CustomTextField(
+                      controller: _passwordController,
+                      hintText: 'Enter your password',
+                      isPassword: true,
+                      isOutlined: true,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(12.w),
+                        child: Icon(Icons.lock_outline_rounded, size: 22.w, color: const Color(0xFF94A3B8)),
                       ),
-                      SizedBox(height: 24.h),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Password is required';
+                        if (value.length < 6) return 'Password must be at least 6 characters';
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 40.h),
 
-                      // Register link
-                      Center(
-                        child: GestureDetector(
-                          onTap: () => Get.toNamed(AppRoutes.register),
-                          child: RichText(
-                            text: TextSpan(
-                              text: "Don't have an account? ",
-                              style: AppStyles.h5(
-                                color: AppColors.subtitleColor,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Sign Up',
-                                  style: AppStyles.h5(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                    // Login Button
+                    GetBuilder<AuthController>(
+                      builder: (controller) {
+                        return Container(
+                          width: double.infinity,
+                          height: 56.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.r),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
                             ),
+                            boxShadow: [
+                              BoxShadow(color: const Color(0xFF3B82F6).withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                            ),
+                            onPressed: controller.isLoading ? null : _handleLogin,
+                            child: controller.isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : Text('Sign In', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.5)),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 32.h),
+
+                    // Register link
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.register),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(fontSize: 15.sp, color: const Color(0xFF64748B), fontWeight: FontWeight.w500),
+                            children: [
+                              TextSpan(
+                                text: 'Sign Up',
+                                style: TextStyle(fontSize: 15.sp, color: const Color(0xFF3B82F6), fontWeight: FontWeight.w800),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 24.h),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 48.h),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1E40AF),
-            AppColors.primaryColor,
-            Color(0xFF3B82F6),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
-        ),
-      ),
-      child: Column(
-        children: [
-          // App Icon
-          Container(
-            width: 72.w,
-            height: 72.w,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Icon(
-              Icons.school_rounded,
-              size: 40.sp,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            'EduBD',
-            style: TextStyle(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              letterSpacing: 0.5,
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            'Learning Management System',
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.8),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: AppStyles.h5(
-        color: AppColors.titleColor,
-        fontWeight: FontWeight.w600,
       ),
     );
   }

@@ -17,7 +17,6 @@ class TeacherDashboardScreen extends StatefulWidget {
 
 class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   final _pageController = PageController(initialPage: 1);
-  final _notchController = NotchBottomBarController(index: 1);
   int _currentIndex = 1;
 
   @override
@@ -31,7 +30,6 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   @override
   void dispose() {
     _pageController.dispose();
-    _notchController.dispose();
     super.dispose();
   }
 
@@ -39,64 +37,94 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBody: true,
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
         children: [
           const CreateCourseScreen(isTab: true),
           _buildMyCoursesTab(),
           const ProfileScreen(),
         ],
       ),
-      bottomNavigationBar: AnimatedNotchBottomBar(
-        notchBottomBarController: _notchController,
-        color: Colors.white,
-        showLabel: true,
-        textOverflow: TextOverflow.visible,
-        maxLine: 1,
-        shadowElevation: 5,
-        kBottomRadius: 28.0,
-        notchColor: AppColors.primaryColor,
-        removeMargins: false,
-        bottomBarWidth: 500,
-        showShadow: true,
-        durationInMilliSeconds: 300,
-        itemLabelStyle: const TextStyle(fontSize: 10),
-        elevation: 1,
-        bottomBarItems: const [
-          BottomBarItem(
-            inActiveItem: Icon(Icons.add_circle_outline, color: Colors.blueGrey),
-            activeItem: Icon(Icons.add_circle, color: Colors.white),
-            itemLabel: 'Add Course',
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 10)),
+            ],
           ),
-          BottomBarItem(
-            inActiveItem: Icon(Icons.home_outlined, color: Colors.blueGrey),
-            activeItem: Icon(Icons.home, color: Colors.white),
-            itemLabel: 'Home',
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildNavItem(0, Icons.add_circle_rounded, 'Add Course', const Color(0xFF4785FF)),
+              _buildNavItem(1, Icons.home_rounded, 'Home', const Color(0xFF4785FF)),
+              _buildNavItem(2, Icons.person_rounded, 'Profile', const Color(0xFF4785FF)),
+            ],
           ),
-          BottomBarItem(
-            inActiveItem: Icon(Icons.person_outline, color: Colors.blueGrey),
-            activeItem: Icon(Icons.person, color: Colors.white),
-            itemLabel: 'Profile',
-          ),
-        ],
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-            _pageController.jumpToPage(index);
-          });
-        },
-        kIconSize: 24.0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label, Color activeColor) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+          _pageController.jumpToPage(index);
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutQuint,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? activeColor : const Color(0xFF94A3B8),
+              size: 24,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: activeColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ]
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildMyCoursesTab() {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: Text('My Courses', style: AppStyles.h3(color: AppColors.titleColor)),
-        backgroundColor: Colors.white,
+        title: const Text('My Courses', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B))),
+        backgroundColor: const Color(0xFFFAFAFA),
         elevation: 0,
+        centerTitle: false,
       ),
       body: GetBuilder<TeacherController>(
         builder: (controller) {
@@ -120,62 +148,86 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             itemCount: controller.myCourses.length,
             itemBuilder: (context, index) {
               final course = controller.myCourses[index];
-              return Card(
-                elevation: 2,
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              String displayStatus = (course.status ?? 'Pending').toUpperCase();
+              if (displayStatus == 'PENDING') displayStatus = 'DRAFT';
+              if (course.isPublished == true) displayStatus = 'PUBLISHED';
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 4)),
+                  ],
+                ),
                 child: InkWell(
                   onTap: () {
                     Get.toNamed(AppRoutes.manageCourse.replaceAll(':id', course.id.toString()));
                   },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            width: 100,
-                            height: 80,
-                            color: Colors.grey[200],
-                            child: course.thumbnail != null
-                                ? Image.network(course.thumbnail!, fit: BoxFit.cover)
-                                : const Icon(Icons.image, color: Colors.grey),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(course.title ?? 'Untitled', 
-                                style: AppStyles.h4(color: AppColors.titleColor),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF0F4F8),
+                                borderRadius: BorderRadius.circular(16),
+                                image: course.thumbnail != null
+                                    ? DecorationImage(image: NetworkImage(course.thumbnail!), fit: BoxFit.cover)
+                                    : null,
                               ),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: _getStatusColor(course.status).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  (course.status ?? 'Pending').toUpperCase(),
-                                  style: AppStyles.h6(color: _getStatusColor(course.status)),
-                                ),
+                              child: course.thumbnail == null
+                                  ? const Center(child: Icon(Icons.image_outlined, color: Colors.grey, size: 32))
+                                  : null,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    course.title ?? 'Untitled', 
+                                    style: const TextStyle(fontSize: 18, color: Color(0xFF1B2A3B), fontWeight: FontWeight.w500),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: _getStatusBgColor(displayStatus),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      displayStatus,
+                                      style: TextStyle(
+                                        color: _getStatusTextColor(displayStatus), 
+                                        fontSize: 11, 
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            const Icon(Icons.chevron_right, color: Color(0xFFB0B7C3)),
+                          ],
                         ),
-                        const Icon(Icons.chevron_right, color: Colors.grey),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -186,11 +238,24 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
     );
   }
 
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'approved': return Colors.green;
-      case 'rejected': return Colors.red;
-      case 'pending': return Colors.orange;
+  Color _getStatusBgColor(String status) {
+    switch (status) {
+      case 'APPROVED': return const Color(0xFFE8F5E9);
+      case 'DRAFT': return const Color(0xFFFFF8E1);
+      case 'REJECTED': 
+      case 'NEEDS REVIEW': return const Color(0xFFFFEBEE);
+      case 'PUBLISHED': return const Color(0xFFE3F2FD);
+      default: return Colors.grey[200]!;
+    }
+  }
+
+  Color _getStatusTextColor(String status) {
+    switch (status) {
+      case 'APPROVED': return const Color(0xFF66BB6A);
+      case 'DRAFT': return const Color(0xFFFFCA28);
+      case 'REJECTED':
+      case 'NEEDS REVIEW': return const Color(0xFFEF5350);
+      case 'PUBLISHED': return const Color(0xFF42A5F5);
       default: return Colors.grey;
     }
   }

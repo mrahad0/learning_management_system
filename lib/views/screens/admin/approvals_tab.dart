@@ -12,11 +12,12 @@ class ApprovalsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
-        title: Text('Pending Approvals', style: AppStyles.h3(color: AppColors.titleColor)),
-        backgroundColor: Colors.white,
+        title: const Text('Pending Approvals', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B))),
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: false,
       ),
       body: GetBuilder<AdminController>(
         builder: (controller) {
@@ -32,11 +33,21 @@ class ApprovalsTab extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline, size: 80, color: Colors.green[300]),
-                  const SizedBox(height: 16),
-                  Text('All caught up!', style: AppStyles.h2(color: AppColors.titleColor)),
-                  const SizedBox(height: 8),
-                  Text('There are no pending approvals.', style: AppStyles.h5(color: AppColors.subtitleColor)),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDCFCE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(color: const Color(0xFF22C55E).withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10)),
+                      ],
+                    ),
+                    child: const Icon(Icons.check_circle_rounded, size: 60, color: Color(0xFF22C55E)),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text('All caught up!', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B))),
+                  const SizedBox(height: 12),
+                  const Text('There are no pending approvals.', style: TextStyle(fontSize: 15, color: Colors.grey)),
                 ],
               ),
             );
@@ -47,20 +58,40 @@ class ApprovalsTab extends StatelessWidget {
               await controller.getPendingApprovals();
             },
             child: ListView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               children: [
                 if (pendingTeachers.isNotEmpty) ...[
-                  Text('Pending Teachers (${pendingTeachers.length})', style: AppStyles.h3(color: AppColors.titleColor)),
-                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Teachers', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1B2A3B))),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: const Color(0xFFEF4444).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                        child: Text('${pendingTeachers.length}', style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w700, fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   ...pendingTeachers.map((t) => _buildTeacherCard(t, controller)),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                 ],
                 if (pendingCourses.isNotEmpty) ...[
-                  Text('Pending Courses (${pendingCourses.length})', style: AppStyles.h3(color: AppColors.titleColor)),
-                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Courses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1B2A3B))),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: const Color(0xFFEF4444).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                        child: Text('${pendingCourses.length}', style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w700, fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   ...pendingCourses.map((c) => _buildCourseCard(c, controller)),
                 ],
-                const SizedBox(height: 100),
+                const SizedBox(height: 120),
               ],
             ),
           );
@@ -70,100 +101,147 @@ class ApprovalsTab extends StatelessWidget {
   }
 
   Widget _buildTeacherCard(UserModel teacher, AdminController controller) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: AppColors.primaryLight,
-              child: Text(teacher.firstName?.substring(0, 1).toUpperCase() ?? 'U', style: const TextStyle(color: AppColors.primaryColor)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 8)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [Color(0xFF4785FF), Color(0xFF2052D8)]),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(color: const Color(0xFF4785FF).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${teacher.firstName} ${teacher.lastName}', style: AppStyles.h4(color: AppColors.titleColor)),
-                  Text(teacher.email ?? '', style: AppStyles.h6(color: AppColors.subtitleColor)),
-                ],
+            child: Center(
+              child: Text(
+                teacher.firstName?.substring(0, 1).toUpperCase() ?? 'U',
+                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            ElevatedButton(
-              onPressed: () => controller.approveTeacher(teacher.id!),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              child: const Text('Approve', style: TextStyle(color: Colors.white)),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${teacher.firstName} ${teacher.lastName}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B2A3B))),
+                const SizedBox(height: 4),
+                Text(teacher.email ?? '', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+              ],
             ),
-          ],
-        ),
+          ),
+          InkWell(
+            onTap: () => controller.approveTeacher(teacher.id!),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDCFCE7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text('Approve', style: TextStyle(color: Color(0xFF166534), fontWeight: FontWeight.w700, fontSize: 13)),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCourseCard(CourseModel course, AdminController controller) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(course.title ?? 'Untitled', style: AppStyles.h4(color: AppColors.titleColor)),
-                      Text('By ${course.teacherName}', style: AppStyles.h6(color: AppColors.primaryColor)),
-                    ],
-                  ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 8)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(course.title ?? 'Untitled', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1B2A3B))),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(Icons.person_outline, size: 14, color: Color(0xFF4785FF)),
+                        const SizedBox(width: 6),
+                        Text('By ${course.teacherName}', style: const TextStyle(fontSize: 13, color: Color(0xFF4785FF), fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.amber[100],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text('Pending', style: TextStyle(color: Colors.amber[900], fontSize: 12)),
-                )
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF3C7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text('Pending', style: TextStyle(color: Color(0xFFD97706), fontWeight: FontWeight.w700, fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 48,
                   child: OutlinedButton(
                     onPressed: () => controller.rejectCourse(course.id!),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.errorColor,
-                      side: const BorderSide(color: AppColors.errorColor),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      foregroundColor: const Color(0xFFEF4444),
+                      side: const BorderSide(color: Color(0xFFFCA5A5)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Reject'),
+                    child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(colors: [Color(0xFF4785FF), Color(0xFF2052D8)]),
+                    boxShadow: [
+                      BoxShadow(color: const Color(0xFF4785FF).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                    ],
+                  ),
                   child: ElevatedButton(
                     onPressed: () => controller.approveCourse(course.id!),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Approve', style: TextStyle(color: Colors.white)),
+                    child: const Text('Approve', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
-              ],
-            )
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

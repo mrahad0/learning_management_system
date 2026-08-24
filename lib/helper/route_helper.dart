@@ -9,6 +9,7 @@ import 'package:learning_management_system/views/screens/teacher/teacher_dashboa
 import 'package:learning_management_system/views/screens/admin/admin_dashboard_screen.dart';
 import 'package:learning_management_system/views/screens/student/course_detail_screen.dart';
 import 'package:learning_management_system/views/screens/student/lesson_viewer_screen.dart';
+import 'package:learning_management_system/views/screens/student/pdf_viewer_screen.dart';
 
 import 'package:learning_management_system/views/screens/teacher/create_course_screen.dart';
 import 'package:learning_management_system/views/screens/teacher/manage_course_screen.dart';
@@ -35,6 +36,7 @@ class AppRoutes {
   static const String takeQuiz = "/student-home/take-quiz/:id";
   static const String certificate = "/student-home/certificate/:id";
   static const String myCertificates = '/my-certificates';
+  static const String pdfViewer = '/pdf-viewer';
 
   static List<GetPage> page = [
     GetPage(name: splashScreen, page: () => const SplashScreen()),
@@ -53,5 +55,6 @@ class AppRoutes {
     GetPage(name: takeQuiz, page: () => const TakeQuizScreen()),
     GetPage(name: certificate, page: () => const CertificateScreen()),
     GetPage(name: myCertificates, page: () => const MyCertificatesScreen()),
+    GetPage(name: pdfViewer, page: () => const PdfViewerScreen()),
   ];
 }

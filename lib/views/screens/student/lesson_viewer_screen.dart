@@ -52,8 +52,8 @@ class _LessonViewerScreenState extends State<LessonViewerScreen> {
       looping: false,
       aspectRatio: _videoPlayerController!.value.aspectRatio,
       materialProgressColors: ChewieProgressColors(
-        playedColor: AppColors.primaryColor,
-        handleColor: AppColors.primaryColor,
+        playedColor: const Color(0xFFC25E3E),
+        handleColor: const Color(0xFFC25E3E),
         backgroundColor: Colors.grey,
         bufferedColor: Colors.grey[300]!,
       ),
@@ -68,100 +68,249 @@ class _LessonViewerScreenState extends State<LessonViewerScreen> {
     super.dispose();
   }
 
+  Widget _buildBadge(String text, Color bgColor, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(lesson.title ?? 'Lesson', style: AppStyles.h4(color: AppColors.titleColor)),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: AppColors.titleColor),
-      ),
-      body: Column(
-        children: [
-          if (lesson.isVideo)
-            Container(
-              height: 250,
-              color: Colors.black,
-              child: _isVideoInitializing
-                  ? const Center(child: CircularProgressIndicator())
-                  : _chewieController != null
-                      ? Chewie(controller: _chewieController!)
-                      : const Center(child: Text('Failed to load video', style: TextStyle(color: Colors.white))),
-            ),
-          
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(lesson.title ?? '', style: AppStyles.h3(color: AppColors.titleColor)),
-                  const SizedBox(height: 16),
-                  
-                  if (lesson.isText)
-                    Text(
-                      lesson.textContent ?? 'No content available.',
-                      style: AppStyles.h5(color: AppColors.subtitleColor),
-                    ),
+    final bool isTeacher = Get.isRegistered<AuthController>() && 
+                          Get.find<AuthController>().userRole == 'teacher';
 
-                  if (lesson.isPdf)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(16),
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFFDF7), // Cream background
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFFFDF7),
+        elevation: 0,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => Get.back(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ],
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.black, size: 20),
+            ),
+          ),
+        ),
+        title: Text(
+          lesson.title ?? 'Lesson', 
+          style: const TextStyle(
+            color: Color(0xFF1B2A3B),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 100), // padding for the bottom button
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Video Player Card
+                if (lesson.isVideo)
+                  Container(
+                    margin: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        )
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        height: 200,
+                        color: Colors.black,
+                        child: _isVideoInitializing
+                            ? const Center(child: CircularProgressIndicator())
+                            : _chewieController != null
+                                ? Chewie(controller: _chewieController!)
+                                : const Center(child: Text('Failed to load video', style: TextStyle(color: Colors.white))),
                       ),
-                      child: Column(
+                    ),
+                  ),
+
+                // Content Area
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        lesson.title ?? '', 
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF1B2A3B),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Badges
+                      Row(
                         children: [
-                          const Icon(Icons.picture_as_pdf, size: 48, color: AppColors.primaryColor),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              // Open PDF Viewer (Phase 3)
-                              Get.snackbar('PDF Viewer', 'Coming Soon in next phase!');
-                            },
-                            child: const Text('Open PDF'),
-                          )
+                          if (lesson.durationMinutes != null) ...[
+                            _buildBadge(
+                              '${lesson.durationMinutes} mins', 
+                              const Color(0xFFD8E6F5), // Light blue
+                              const Color(0xFF2C64B5), // Dark blue
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                          _buildBadge(
+                            lesson.isVideo ? 'Video' : (lesson.isPdf ? 'PDF' : 'Text'), 
+                            const Color(0xFFD6EBE2), // Light mint
+                            const Color(0xFF17684C), // Dark green
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Description / Content
+                      Text(
+                        lesson.textContent ?? 'prerequisites, Django environment configuration, etc.',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // PDF Button fallback if it's a PDF
+                      if (lesson.isPdf)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.picture_as_pdf, size: 48, color: Color(0xFFC25E3E)),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1F2937),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                                onPressed: () {
+                                  if (lesson.pdfFile != null && lesson.pdfFile!.isNotEmpty) {
+                                    Get.toNamed(AppRoutes.pdfViewer, arguments: lesson.pdfFile!);
+                                  } else {
+                                    Get.snackbar('Error', 'PDF file URL is missing.');
+                                  }
+                                },
+                                child: const Text('Open PDF Document', style: TextStyle(color: Colors.white)),
+                              )
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Floating Quiz Button
+          if (_quizId != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+                width: double.infinity,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFF37552).withOpacity(0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    )
+                  ],
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFF6A035), Color(0xFFF37552)],
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      if (isTeacher) {
+                        String route = AppRoutes.createQuiz.replaceAll(':lessonId', lesson.id.toString());
+                        Get.toNamed(route);
+                      } else {
+                        String route = AppRoutes.takeQuiz.replaceAll(':id', _quizId.toString());
+                        Get.toNamed(route);
+                      }
+                    },
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('🎯', style: TextStyle(fontSize: 20)),
+                          const SizedBox(width: 8),
+                          Text(
+                            isTeacher ? 'VIEW THE QUIZ!' : 'TAKE THE QUIZ!',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    
-                  const SizedBox(height: 24),
-                  
-                  if (_quizId != null)
-                    Builder(
-                      builder: (context) {
-                        bool isTeacher = false;
-                        if (Get.isRegistered<AuthController>()) {
-                          isTeacher = Get.find<AuthController>().userRole == 'teacher';
-                        }
-                        
-                        return SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.accentColor,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            onPressed: () {
-                              String route = AppRoutes.takeQuiz.replaceAll(':id', _quizId.toString());
-                              if (isTeacher) {
-                                route += '?preview=true';
-                              }
-                              Get.toNamed(route);
-                            },
-                            child: Text(isTeacher ? 'View Quiz' : 'Take Quiz', style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
-                          ),
-                        );
-                      }
-                    ),
-                ],
+                  ),
+                ),
               ),
             ),
-          )
         ],
       ),
     );

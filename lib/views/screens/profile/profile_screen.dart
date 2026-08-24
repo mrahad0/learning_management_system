@@ -11,8 +11,13 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF9F8F3), // Light cream background
       appBar: AppBar(
-        title: Text('Profile', style: AppStyles.h3(color: AppColors.titleColor)),
+        title: const Text(
+          'Profile',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF1B2A3B)),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -26,54 +31,94 @@ class ProfileScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
+          String initials = 'U';
+          if (user.fullName.isNotEmpty) {
+            final parts = user.fullName.split(' ');
+            if (parts.length > 1) {
+              initials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+            } else {
+              initials = user.fullName.substring(0, 1).toUpperCase();
+            }
+          }
+
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            padding: const EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Avatar
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: AppColors.primaryLight,
-                  backgroundImage: user.avatar != null && user.avatar!.isNotEmpty
-                      ? NetworkImage(user.avatar!)
-                      : null,
-                  child: user.avatar == null || user.avatar!.isEmpty
-                      ? Text(
-                          user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : 'U',
-                          style: AppStyles.h1(color: AppColors.primaryColor),
-                        )
-                      : null,
+                // Avatar Squircle
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      )
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: user.avatar != null && user.avatar!.isNotEmpty
+                        ? Image.network(user.avatar!, fit: BoxFit.cover)
+                        : Center(
+                            child: Text(
+                              initials,
+                              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w900, color: Color(0xFF488BB9)),
+                            ),
+                          ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 
-                // Name and Role
+                // Name
                 Text(
                   user.fullName,
-                  style: AppStyles.h3(color: AppColors.titleColor),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF1B2A3B)),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
+                
+                // Student Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.1),
+                    color: const Color(0xFF90C2E4), // Light blue denimish
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
                   ),
                   child: Text(
-                    user.role?.toUpperCase() ?? 'USER',
-                    style: AppStyles.h6(color: AppColors.primaryColor),
+                    user.role?.toUpperCase() ?? 'STUDENT',
+                    style: const TextStyle(
+                      color: Color(0xFF1B2A3B), 
+                      fontWeight: FontWeight.w900, 
+                      fontSize: 12, 
+                      letterSpacing: 1.2
+                    ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
 
                 // Info Cards
-                _buildInfoTile(Icons.email_outlined, 'Email', user.email ?? 'N/A'),
+                _buildInfoTile(Icons.email, 'Email', user.email ?? 'N/A'),
+                _buildInfoTile(Icons.phone, 'Phone', user.phone ?? 'N/A'),
+                
                 const SizedBox(height: 16),
-                _buildInfoTile(Icons.phone_outlined, 'Phone', user.phone ?? 'N/A'),
-                const SizedBox(height: 32),
+                
+                // Certificates Card
                 if (user.role == 'student')
                   _buildFeatureTile(
-                    Icons.workspace_premium, 
                     'My Certificates', 
                     subtitle: 'View earned', 
                     onTap: () {
@@ -81,28 +126,112 @@ class ProfileScreen extends StatelessWidget {
                     }
                   ),
                   
-                const SizedBox(height: 32),
-
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
 
                 // Logout Button
-                SizedBox(
+                Container(
                   width: double.infinity,
-                  height: 50,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFBDDDD), Color(0xFFF5BDBD)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFF5BDBD).withOpacity(0.4), 
+                        blurRadius: 15, 
+                        offset: const Offset(0, 8),
+                      )
+                    ],
+                  ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent.withOpacity(0.1),
-                      foregroundColor: Colors.redAccent,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                     ),
-                    onPressed: () async {
-                      await authController.logout();
-                      Get.offAllNamed(AppRoutes.login);
+                    onPressed: () {
+                      Get.dialog(
+                        Dialog(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFEE2E2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444), size: 36),
+                                ),
+                                const SizedBox(height: 20),
+                                const Text('Log Out', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1B2A3B))),
+                                const SizedBox(height: 12),
+                                const Text('Are you sure you want to log out of your account?', textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: Color(0xFF64748B), height: 1.4)),
+                                const SizedBox(height: 32),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextButton(
+                                        onPressed: () => Get.back(),
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(vertical: 16),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          backgroundColor: const Color(0xFFF1F5F9),
+                                        ),
+                                        child: const Text('Cancel', style: TextStyle(color: Color(0xFF475569), fontSize: 16, fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          Get.back();
+                                          await authController.logout();
+                                          Get.offAllNamed(AppRoutes.login);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFFEF4444),
+                                          padding: const EdgeInsets.symmetric(vertical: 16),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          elevation: 0,
+                                        ),
+                                        child: const Text('Log Out', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
                     },
-                    child: const Text('Logout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.logout, color: Color(0xFFA51B1B)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Logout', 
+                          style: TextStyle(
+                            color: Color(0xFFA51B1B), 
+                            fontSize: 16, 
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           );
@@ -113,28 +242,29 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildInfoTile(IconData icon, String title, String value) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
             offset: const Offset(0, 5),
           )
         ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primaryColor),
-          const SizedBox(width: 16),
+          Icon(icon, color: const Color(0xFF329393), size: 28), // Teal color
+          const SizedBox(width: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: AppStyles.h6(color: AppColors.subtitleColor)),
-              const SizedBox(height: 4),
-              Text(value, style: AppStyles.h5(color: AppColors.titleColor)),
+              Text(title, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+              const SizedBox(height: 2),
+              Text(value, style: const TextStyle(color: Color(0xFF212F3D), fontSize: 16, fontWeight: FontWeight.w500)),
             ],
           ),
         ],
@@ -142,35 +272,43 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureTile(IconData icon, String title, {String? subtitle, VoidCallback? onTap}) {
+  Widget _buildFeatureTile(String title, {String? subtitle, VoidCallback? onTap}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            )
+          ],
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.grey[400]),
-            const SizedBox(width: 16),
             Expanded(
-              child: Text(title, style: AppStyles.h5(color: Colors.grey[600]!)),
+              child: Text(title, style: const TextStyle(color: Color(0xFF212F3D), fontSize: 16, fontWeight: FontWeight.w500)),
             ),
             if (subtitle != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
+                  color: const Color(0xFFF0F0F0),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(subtitle, style: AppStyles.h6(color: Colors.grey[600]!)),
+                child: Row(
+                  children: [
+                    Text(subtitle, style: const TextStyle(color: Colors.black54, fontSize: 13)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.black54),
+                  ],
+                ),
               ),
-            if (onTap != null)
-              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
           ],
         ),
       ),

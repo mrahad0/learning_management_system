@@ -10,11 +10,12 @@ class DashboardStatsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
-        title: Text('Admin Dashboard', style: AppStyles.h3(color: AppColors.titleColor)),
-        backgroundColor: Colors.white,
+        title: const Text('Admin Dashboard', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B))),
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: false,
       ),
       body: GetBuilder<AdminController>(
         builder: (controller) {
@@ -24,7 +25,7 @@ class DashboardStatsTab extends StatelessWidget {
 
           final stats = controller.dashboardStats;
           if (stats == null) {
-            return Center(child: Text('No stats available', style: AppStyles.h5(color: AppColors.subtitleColor)));
+            return const Center(child: Text('No stats available', style: TextStyle(color: Colors.grey, fontSize: 16)));
           }
 
           return RefreshIndicator(
@@ -32,12 +33,12 @@ class DashboardStatsTab extends StatelessWidget {
               await controller.getDashboardStats();
             },
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Overview', style: AppStyles.h2(color: AppColors.titleColor)),
+                  const Text('Platform Overview', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1B2A3B))),
                   const SizedBox(height: 16),
                   
                   // Total Users Grid
@@ -48,17 +49,17 @@ class DashboardStatsTab extends StatelessWidget {
                     mainAxisSpacing: 16,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 1.2,
+                    childAspectRatio: 1.05,
                     children: [
-                      _buildStatCard('Total Users', stats['users']?['total']?.toString() ?? '0', Icons.people, Colors.blue),
-                      _buildStatCard('Students', stats['users']?['students']?.toString() ?? '0', Icons.school, Colors.green),
-                      _buildStatCard('Teachers', stats['users']?['teachers']?.toString() ?? '0', Icons.cast_for_education, Colors.orange),
-                      _buildStatCard('Courses', stats['courses']?['total']?.toString() ?? '0', Icons.library_books, Colors.purple),
+                      _buildStatCard('Total Users', stats['users']?['total']?.toString() ?? '0', Icons.people_alt_rounded, const Color(0xFF4785FF)),
+                      _buildStatCard('Students', stats['users']?['students']?.toString() ?? '0', Icons.school_rounded, const Color(0xFF22C55E)),
+                      _buildStatCard('Teachers', stats['users']?['teachers']?.toString() ?? '0', Icons.cast_for_education_rounded, const Color(0xFFF59E0B)),
+                      _buildStatCard('Courses', stats['courses']?['total']?.toString() ?? '0', Icons.library_books_rounded, const Color(0xFF8B5CF6)),
                     ],
                   ),
                   
-                  const SizedBox(height: 24),
-                  Text('Platform Engagement', style: AppStyles.h2(color: AppColors.titleColor)),
+                  const SizedBox(height: 32),
+                  const Text('Engagement Metrics', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1B2A3B))),
                   const SizedBox(height: 16),
                   
                   // Engagement Grid
@@ -69,26 +70,26 @@ class DashboardStatsTab extends StatelessWidget {
                     mainAxisSpacing: 16,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 1.2,
+                    childAspectRatio: 1.05,
                     children: [
-                      _buildStatCard('Total Lessons', stats['lessons']?.toString() ?? '0', Icons.play_lesson, Colors.teal),
-                      _buildStatCard('Enrollments', stats['enrollments']?.toString() ?? '0', Icons.check_circle, Colors.indigo),
-                      _buildStatCard('Certificates', stats['certificates']?.toString() ?? '0', Icons.workspace_premium, Colors.amber),
-                      _buildStatCard('Quiz Subs', stats['quiz_submissions']?.toString() ?? '0', Icons.quiz, Colors.deepOrange),
+                      _buildStatCard('Total Lessons', stats['lessons']?.toString() ?? '0', Icons.play_lesson_rounded, const Color(0xFF14B8A6)),
+                      _buildStatCard('Enrollments', stats['enrollments']?.toString() ?? '0', Icons.check_circle_rounded, const Color(0xFF6366F1)),
+                      _buildStatCard('Certificates', stats['certificates']?.toString() ?? '0', Icons.workspace_premium_rounded, const Color(0xFFEAB308)),
+                      _buildStatCard('Quiz Subs', stats['quiz_submissions']?.toString() ?? '0', Icons.quiz_rounded, const Color(0xFFEC4899)),
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   // Additional stat for average quiz score
                   _buildActionCard(
                     'Average Quiz Score', 
                     '${stats['avg_quiz_score']?.toString() ?? '0'}%', 
-                    Icons.analytics, 
-                    AppColors.primaryColor
+                    Icons.analytics_rounded, 
+                    const Color(0xFF4785FF),
                   ),
 
-                  const SizedBox(height: 24),
-                  Text('Action Required', style: AppStyles.h2(color: AppColors.titleColor)),
+                  const SizedBox(height: 32),
+                  const Text('Action Required', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1B2A3B))),
                   const SizedBox(height: 16),
                   
                   // Pending Items
@@ -97,16 +98,16 @@ class DashboardStatsTab extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Expanded(
-                          child: _buildActionCard('Pending Teachers', stats['users']?['pending_teachers']?.toString() ?? '0', Icons.person_add, AppColors.errorColor),
+                          child: _buildActionCard('Pending\nTeachers', stats['users']?['pending_teachers']?.toString() ?? '0', Icons.person_add_rounded, const Color(0xFFEF4444)),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: _buildActionCard('Pending Courses', stats['courses']?['pending']?.toString() ?? '0', Icons.pending_actions, AppColors.errorColor),
+                          child: _buildActionCard('Pending\nCourses', stats['courses']?['pending']?.toString() ?? '0', Icons.pending_actions_rounded, const Color(0xFFEF4444)),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 100), // Bottom padding for nav bar
+                  const SizedBox(height: 120), // Bottom padding for nav bar
                 ],
               ),
             ),
@@ -120,32 +121,42 @@ class DashboardStatsTab extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: color.withOpacity(0.15),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const Spacer(),
-          Text(count, style: AppStyles.h1(color: AppColors.titleColor)),
-          Text(title, style: AppStyles.h6(color: AppColors.subtitleColor)),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                count, 
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B), height: 1.1),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                title, 
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF64748B)),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -155,27 +166,41 @@ class DashboardStatsTab extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.05),
-            spreadRadius: 1,
-            blurRadius: 5,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(count, style: AppStyles.h2(color: AppColors.titleColor)),
-                Text(title, style: AppStyles.h6(color: color)),
+                Text(
+                  count, 
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B), height: 1.2),
+                ),
+                Text(
+                  title, 
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+                ),
               ],
             ),
           )

@@ -98,7 +98,7 @@ class ApiClient extends GetxService {
       Map<String, String> body, {
         required List<MultipartBody> multipartBody,
         Map<String, String>? headers,
-        int timeoutSeconds = timeoutInSeconds,
+        int timeoutSeconds = 300, // 5 minutes for video uploads
       }) async {
     try {
       bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);

@@ -57,13 +57,17 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Create New Course'),
+        title: const Text(
+          'Create New Course',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF1B2A3B)),
+        ),
+        centerTitle: false,
         backgroundColor: Colors.white,
-        foregroundColor: AppColors.titleColor,
+        foregroundColor: const Color(0xFF1B2A3B),
         elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: GetBuilder<TeacherController>(
         builder: (controller) {
           return SingleChildScrollView(
@@ -71,72 +75,118 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Course Title', style: AppStyles.h5()),
+                const Text('Course Title', style: TextStyle(color: Color(0xFF4A5568), fontSize: 14)),
                 const SizedBox(height: 8),
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    hintText: 'e.g. Flutter for Beginners',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF4F7FA),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      hintText: 'e.g. Flutter for Beginners',
+                      hintStyle: TextStyle(color: Colors.black54),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 
-                Text('Description', style: AppStyles.h5()),
+                const Text('Description', style: TextStyle(color: Color(0xFF4A5568), fontSize: 14)),
                 const SizedBox(height: 8),
-                TextField(
-                  controller: _descController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: 'What will students learn?',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF4F7FA),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: TextField(
+                    controller: _descController,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      hintText: 'What will students learn?',
+                      hintStyle: TextStyle(color: Colors.black54),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 
-                Text('Thumbnail (Optional)', style: AppStyles.h5()),
+                const Text('Thumbnail (Optional)', style: TextStyle(color: Color(0xFF4A5568), fontSize: 14)),
                 const SizedBox(height: 8),
                 InkWell(
                   onTap: _pickImage,
+                  borderRadius: BorderRadius.circular(20),
                   child: Container(
-                    height: 180,
+                    height: 200,
                     width: double.infinity,
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!, style: BorderStyle.solid),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 10))
+                      ],
                     ),
-                    child: _thumbnailPath != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(File(_thumbnailPath!), fit: BoxFit.cover),
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.cloud_upload_outlined, size: 48, color: Colors.grey[400]),
-                              const SizedBox(height: 8),
-                              Text('Tap to select image', style: TextStyle(color: Colors.grey[600])),
-                            ],
-                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFB0C4DE), width: 1.5, style: BorderStyle.solid), // Solid border since dotted isn't built-in
+                      ),
+                      child: _thumbnailPath != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.file(File(_thumbnailPath!), fit: BoxFit.cover),
+                            )
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(color: const Color(0xFF4A89FF).withOpacity(0.3), blurRadius: 20, spreadRadius: -5)
+                                    ],
+                                  ),
+                                  child: const Icon(Icons.cloud_upload_rounded, size: 54, color: Color(0xFF6B9CFF)),
+                                ),
+                                const SizedBox(height: 12),
+                                const Text('Tap to select image', style: TextStyle(color: Colors.black54, fontSize: 14)),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
                 
-                SizedBox(
+                Container(
                   width: double.infinity,
-                  height: 54,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4785FF), Color(0xFF2052D8)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    boxShadow: [
+                      BoxShadow(color: const Color(0xFF4785FF).withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+                    ],
+                  ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: controller.isLoading ? null : _submit,
                     child: controller.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Create Course', style: TextStyle(fontSize: 16, color: Colors.white)),
+                        : const Text('Create Course', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
                 ),
+                const SizedBox(height: 120), // Added padding for floating bottom nav bar
               ],
             ),
           );

@@ -24,11 +24,32 @@ class _MyCertificatesScreenState extends State<MyCertificatesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF9F8F3), // Light cream
       appBar: AppBar(
-        title: Text('My Certificates', style: AppStyles.h3(color: AppColors.titleColor)),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: AppColors.titleColor),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16.0, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () => Get.back(),
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back, color: Color(0xFF1B2A3B), size: 20),
+            ),
+          ),
+        ),
+        title: const Text(
+          'My Certificates',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF1B2A3B)),
+        ),
       ),
       body: GetBuilder<StudentController>(
         builder: (controller) {
@@ -43,17 +64,27 @@ class _MyCertificatesScreenState extends State<MyCertificatesScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.workspace_premium_outlined, size: 80, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No Certificates Yet',
-                      style: AppStyles.h3(color: AppColors.titleColor),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))
+                        ],
+                      ),
+                      child: const Icon(Icons.workspace_premium_outlined, size: 60, color: Colors.grey),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 24),
+                    const Text(
+                      'No Certificates Yet',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1B2A3B)),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
                       'Complete courses to earn your certificates!',
                       textAlign: TextAlign.center,
-                      style: AppStyles.h5(color: AppColors.subtitleColor),
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -62,47 +93,87 @@ class _MyCertificatesScreenState extends State<MyCertificatesScreen> {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             itemCount: controller.myCertificates!.length,
             itemBuilder: (context, index) {
               final cert = controller.myCertificates![index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    )
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFFE5B962),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26, 
+                            blurRadius: 8, 
+                            offset: Offset(0, 4),
+                          )
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text('🏅', style: TextStyle(fontSize: 32)),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cert.courseTitle ?? 'Unknown Course', 
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1B2A3B)),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today, size: 12, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Issued: ${cert.issuedAt?.split('T').first ?? 'N/A'}', 
+                                style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    InkWell(
+                      onTap: () {
+                        if (cert.course != null) {
+                          Get.toNamed(AppRoutes.certificate.replaceAll(':id', cert.course.toString()));
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.amber[100],
-                          borderRadius: BorderRadius.circular(12),
+                          color: const Color(0xFFF0F0F0),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Icon(Icons.workspace_premium, color: Colors.amber[800], size: 32),
+                        child: const Icon(Icons.file_download_outlined, color: Color(0xFF1B2A3B)),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(cert.courseTitle ?? 'Unknown Course', style: AppStyles.h5(color: AppColors.titleColor)),
-                            const SizedBox(height: 4),
-                            Text('Issued: ${cert.issuedAt?.split('T').first ?? 'N/A'}', style: AppStyles.h6(color: AppColors.subtitleColor)),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.download, color: AppColors.primaryColor),
-                        onPressed: () {
-                          if (cert.course != null) {
-                            Get.toNamed(AppRoutes.certificate.replaceAll(':id', cert.course.toString()));
-                          }
-                        },
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               );
             },
